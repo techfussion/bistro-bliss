@@ -1,0 +1,168 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  password       String
+  firstName      String
+  lastName       String
+  phone          String?
+  role           Role         @default(CUSTOMER)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  addresses      Address[]
+  orders         Order[]
+  reservations   Reservation[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+model Address {
+  id          String    @id @default(uuid())
+  street      String
+  city        String
+  state       String
+  postalCode  String
+  isDefault   Boolean   @default(false)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  orders      Order[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("addresses")
+}
+
+model MenuItem {
+  id          String        @id @default(uuid())
+  name        String
+  description String
+  price       Decimal       @db.Decimal(10, 2)
+  image       String?
+  category    MenuCategory  @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  isAvailable Boolean       @default(true)
+  orderItems  OrderItem[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("menu_items")
+}
+
+model MenuCategory {
+  id          String      @id @default(uuid())
+  name        String
+  items       MenuItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("menu_categories")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  user            User        @relation(fields: [userId], references: [id])
+  userId          String
+  items           OrderItem[]
+  status          OrderStatus @default(PENDING)
+  type            OrderType
+  address         Address?    @relation(fields: [addressId], references: [id])
+  addressId       String?
+  specialNotes    String?
+  subtotal        Decimal     @db.Decimal(10, 2)
+  tax             Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  payment         Payment?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String    @id @default(uuid())
+  order       Order     @relation(fields: [orderId], references: [id])
+  orderId     String
+  menuItem    MenuItem  @relation(fields: [menuItemId], references: [id])
+  menuItemId  String
+  quantity    Int
+  price       Decimal   @db.Decimal(10, 2)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("order_items")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  ON_DELIVERY
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+enum OrderType {
+  DELIVERY
+  PICKUP
+}
+
+model Reservation {
+  id          String    @id @default(uuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  date        DateTime
+  time        DateTime
+  partySize   Int
+  status      ReservationStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("reservations")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  order         Order         @relation(fields: [orderId], references: [id])
+  orderId       String        @unique
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("USD")
+  status        PaymentStatus
+  provider      String        // e.g., "stripe", "paypal"
+  providerPaymentId String?   // Payment ID from the provider
+  qrCodeUrl     String?       // URL for QR code payment
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
