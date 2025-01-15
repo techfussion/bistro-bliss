@@ -10,8 +10,12 @@ import { UseGuards } from '@nestjs/common';
 import { WsJwtAuthGuard } from '../auth/guards/ws-jwt-auth.guard';
 
 @WebSocketGateway({
+  // cors: {
+  //   origin: '*',
+  // },
   cors: {
-    origin: '*',
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
   },
   namespace: 'orders',
 })
