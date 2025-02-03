@@ -5,12 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from './dto/user.dto';
+import { CreateUserDto, UpdateUserDto, ChangePasswordDto } from './dto/address.dto';
 import { User } from '@prisma/client';
 import * as argon from 'argon2';
 
 @Injectable()
-export class UsersService {
+export class AddressService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {

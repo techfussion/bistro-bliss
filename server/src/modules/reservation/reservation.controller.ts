@@ -32,7 +32,7 @@ export class ReservationController {
   @Post()
   @ApiOperation({ summary: 'Create a new reservation' })
   async createReservation(@Body() dto: CreateReservationDto, @Req() req: any) {
-    return this.reservationService.createReservation(dto, req.user.userId);
+    return this.reservationService.createReservation(dto, req.user.sub);
   }
 
   @Get()
