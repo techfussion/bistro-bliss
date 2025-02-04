@@ -66,7 +66,7 @@ export default function Footer() {
               {[1,2,3,4].map((item) => (
                 <Image
                   key={item}
-                  src=""
+                  src={logo}
                   alt="Instagram post"
                   width={100}
                   height={100}

@@ -20,9 +20,9 @@ export default function ProfilePage() {
   return (
     <div>
         <Header />
-        <div className="p-6 space-y-4">
-            <h1 className="text-2xl font-bold">Profile</h1>
-            <Card className="p-4">
+        <div className="p-6 space-y-4 px-24">
+        <h1 className="text-xl font-bold font-serif text-red-700 italic">Profile</h1>
+        <Card className="p-4">
                 <CardContent className="space-y-4">
                 <div>
                     <label className="block mb-1">First Name</label>

@@ -11,6 +11,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CartDrawer } from "./cart-drawar";
+import { SheetTrigger } from "./ui/sheet";
 
 const Profile = () => {
   const { auth, setAuth } = useAuth();
@@ -23,17 +25,18 @@ const Profile = () => {
   if (auth.isLoggedIn) {
     return (
       <div className="flex items-center gap-4">
-        <Button variant="ghost" className="relative text-xs" asChild>
-          <Link href="/cart">
-            <ShoppingCart className="h-5 w-5" />
-            {cart.items.length > 0 && (
-              <span className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-700 text-xs text-white flex items-center justify-center">
-                {cart.items.length}
-              </span>
-            )}
-          </Link>
-        </Button>
-
+        <CartDrawer>
+          <SheetTrigger>
+            <Button variant="ghost" className="relative text-xs">
+              <ShoppingCart className="h-5 w-5" />
+              {cart.items.length > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-700 text-xs text-white flex items-center justify-center">
+                  {cart.items.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
+            </Button>
+          </SheetTrigger>
+        </CartDrawer>
         <Popover>
           <PopoverTrigger>
             <UserRound className="text-xs h-5 w-5" />
