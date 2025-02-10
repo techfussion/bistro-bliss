@@ -51,7 +51,7 @@ export default function Login() {
       })
 
       // Redirect to dashboard
-      router.back();    
+      router.push(user.role === 'ADMIN' ? '/admin' : '/');    
     } catch (error: any) {
       toast({
         variant: "destructive",

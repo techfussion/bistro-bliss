@@ -1,9 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Header from "@/components/header";
-import apiClient from "@/interceptor/axios.interceptor";
+import React, { Fragment, useEffect, useState } from 'react';
+import { Calendar, Clock, Users, AlertCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Pagination,
   PaginationContent,
@@ -12,11 +20,15 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from '@/components/ui/card';
+} from "@/components/ui/pagination";
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import Header from '@/components/header';
+import apiClient from "@/interceptor/axios.interceptor";
+import { CustomerGuard } from "@/components/hoc/customer-gaurd";
+import Link from 'next/link';
 
-const ReservationsPage = () => {
+const MyReservationsPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [reservations, setReservations] = useState<any[]>([]);
   const [token, setToken] = useState<string | null>(null);
@@ -119,24 +131,117 @@ const ReservationsPage = () => {
     );
   }
 
+  interface Reservation {
+    id: string;
+    date: string;
+    time: string;
+    partySize: number;
+    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+    notes?: string;
+  }
+
+  const getStatusColor = (status: Reservation['status']): string => {
+    const colors: Record<Reservation['status'], string> = {
+      PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      CONFIRMED: 'bg-green-100 text-green-800 border-green-300',
+      CANCELLED: 'bg-red-100 text-red-800 border-red-300'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300';
+  };
+
   return (
-    <div>
+    <Fragment>
       <Header />
-      <main className="p-6 px-24 space-y-4">
-        <h1 className="text-xl font-bold font-serif text-red-700 italic">Reservations</h1>
-
-        {reservations.map((reservation) => (
-          <Card key={reservation.id} className="p-4">
-            <CardContent>
-              <p><strong>Reservation ID:</strong> {reservation.id}</p>
-              <p><strong>Status:</strong> {reservation.status}</p>
-              <p><strong>Date:</strong> {reservation.date}</p>
-              <p><strong>Time:</strong> {reservation.time}</p>
-              <p><strong>Party Size:</strong> {reservation.partySize}</p>
-            </CardContent>
-          </Card>
-        ))}
-
+      <main className="py-6 space-y-6 px-24">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold font-serif text-red-700 italic">Reservations</h1>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>New Reservation</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Make a Reservation</DialogTitle>
+              </DialogHeader>
+              <form className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date">Date</Label>
+                    <Input type="date" id="date" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="time">Time</Label>
+                    <Input type="time" id="time" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="partySize">Number of Guests</Label>
+                  <Input type="number" id="partySize" min="1" max="20" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="notes">Special Requests</Label>
+                  <Input id="notes" placeholder="Any special requests or notes?" />
+                </div>
+                <div className="flex justify-end gap-4 mt-4">
+                  <Button type="submit">Make Reservation</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div className="space-y-4">
+          {reservations.map((reservation) => (
+            <Card key={reservation.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Badge className={`${getStatusColor(reservation.status as Reservation['status'])} px-3 py-1 rounded-full border text-xs`}>
+                      {reservation.status.charAt(0) + reservation.status.slice(1).toLowerCase()}
+                    </Badge>
+                    {reservation.status === 'PENDING' && (
+                      <Button variant="outline" className="text-red-600 hover:bg-red-50 text-xs" size="sm">
+                        Cancel Reservation
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex items-center bg-gray-50 p-3 rounded-md">
+                      <Calendar className="h-4 w-4 mr-3 text-gray-500" />
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500">Date</p>
+                        <p className="font-medium text-xs">{reservation.date}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center bg-gray-50 p-3 rounded-md">
+                      <Clock className="h-4 w-4 mr-3 text-gray-500" />
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500">Time</p>
+                        <p className="font-medium text-xs">{reservation.time}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center bg-gray-50 p-3 rounded-md">
+                      <Users className="h-4 w-4 mr-3 text-gray-500" />
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500">Party Size</p>
+                        <p className="font-medium text-xs">{reservation.partySize} guests</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {reservation.notes && (
+                    <div className="bg-gray-50 p-3 rounded-md">
+                      <p className="text-xs mb-1 font-semibold text-gray-500">Special Request:</p>
+                      <p className="text-gray-700 text-sm">{reservation.notes}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
         {totalPages > 1 && (
           <Pagination>
             <PaginationContent>
@@ -171,8 +276,9 @@ const ReservationsPage = () => {
           </Pagination>
         )}
       </main>
-    </div>
+    </Fragment>
+    
   );
 };
 
-export default ReservationsPage;
+export default CustomerGuard(MyReservationsPage);

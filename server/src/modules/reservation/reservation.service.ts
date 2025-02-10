@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -189,7 +190,7 @@ export class ReservationService {
     });
   }
 
-  async confirmReservation(id: string) {
+  async confirmReservation(id: string) {    
     const reservation = await this.prisma.reservation.findUnique({
       where: { id },
     });

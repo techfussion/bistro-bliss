@@ -85,7 +85,7 @@ const MenuPage = () => {
           name: 'Appetizers',
           items: [
             { 
-              id: 'item1', 
+              id: 'item3', 
               name: 'Crispy Calamari', 
               description: 'Golden fried calamari with zesty marinara sauce', 
               price: 12.99, 
@@ -96,11 +96,11 @@ const MenuPage = () => {
           ]
         },
         {
-          id: 'cat1',
+          id: 'cat4',
           name: 'Appetizers',
           items: [
             { 
-              id: 'item1', 
+              id: 'item4', 
               name: 'Crispy Calamari', 
               description: 'Golden fried calamari with zesty marinara sauce', 
               price: 12.99, 
@@ -111,11 +111,11 @@ const MenuPage = () => {
           ]
         },
         {
-          id: 'cat1',
+          id: 'cat5',
           name: 'Appetizers',
           items: [
             { 
-              id: 'item1', 
+              id: 'item5', 
               name: 'Crispy Calamari', 
               description: 'Golden fried calamari with zesty marinara sauce', 
               price: 12.99, 
@@ -198,7 +198,7 @@ const MenuPage = () => {
   return (
     <Fragment>
       <Header />
-      <main className="container mx-auto p-6 px-24 bg-silk-50 min-h-screen">
+      <main className="p-6 px-24 bg-silk-50 min-h-screen">
         <div className="flex flex-col items-center mx-auto w-1/2 gap-4 z-10 mb-8">
            <h1 className="text-6xl text-dark-700 font-serif tracking-wider">Our Menu</h1>
            <p className="text-dark-100 text-sm text-center w-2/3">

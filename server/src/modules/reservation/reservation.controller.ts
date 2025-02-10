@@ -74,7 +74,7 @@ export class ReservationController {
 
   @Put(':id/confirm')
   @Roles(Role.ADMIN)
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Confirm reservation' })
   async confirmReservation(@Param('id') id: string) {
     return this.reservationService.confirmReservation(id);

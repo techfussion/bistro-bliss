@@ -1,8 +1,20 @@
-"use client";
+'use client';
 
+import React, { Fragment, useEffect, useState } from 'react';
 import Header from "@/components/header";
-import { useEffect, useState } from "react";
 import apiClient from "@/interceptor/axios.interceptor";
+import { 
+  Package, Clock, MapPin, Receipt, ChevronDown, 
+  ChevronUp, ExternalLink 
+} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   Pagination,
   PaginationContent,
@@ -13,14 +25,57 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { CustomerGuard } from "@/components/hoc/customer-gaurd";
 
-const OrdersPage = () => {
+const ordersNative = [
+  {
+    id: 'ORD-001',
+    date: '2025-02-05',
+    status: 'DELIVERED',
+    type: 'DELIVERY',
+    items: [
+      { name: 'Jollof Rice', quantity: 2, price: 2500 },
+      { name: 'Chicken Wings', quantity: 1, price: 3000 },
+    ],
+    subtotal: 8000,
+    tax: 600,
+    total: 8600,
+    address: {
+      street: '123 Main Street',
+      city: 'Lagos',
+      state: 'Lagos State',
+    },
+    payment: {
+      status: 'COMPLETED',
+      provider: 'PAYSTACK'
+    }
+  },
+  {
+    id: 'ORD-002',
+    date: '2025-02-06',
+    status: 'PREPARING',
+    type: 'PICKUP',
+    items: [
+      { name: 'Suya Platter', quantity: 1, price: 5000 },
+      { name: 'Chapman', quantity: 2, price: 1000 },
+    ],
+    subtotal: 7000,
+    tax: 525,
+    total: 7525,
+    payment: {
+      status: 'COMPLETED',
+      provider: 'PAYSTACK'
+    }
+  }
+];
+
+const MyOrdersPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [orders, setOrders] = useState<any[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+
 
   const fetchOrders = async (page = 1) => {
     if (!token) return;
@@ -47,8 +102,61 @@ const OrdersPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchOrders(currentPage);
+    setOrders(ordersNative)
+    setTotalPages(1)
+    // fetchOrders(currentPage);
   }, [token, currentPage]);
+
+  interface Address {
+    street: string;
+    city: string;
+    state: string;
+  }
+
+  interface Item {
+    name: string;
+    quantity: number;
+    price: number;
+  }
+
+  interface Payment {
+    status: string;
+    provider: string;
+  }
+
+  interface Order {
+    id: string;
+    date: string;
+    status: string;
+    type: string;
+    items: Item[];
+    subtotal: number;
+    tax: number;
+    total: number;
+    address?: Address;
+    payment: Payment;
+  }
+
+  const getStatusColor = (status: string): string => {
+    const colors: { [key: string]: string } = {
+      PENDING: 'bg-yellow-100 text-yellow-800',
+      CONFIRMED: 'bg-blue-100 text-blue-800',
+      PREPARING: 'bg-purple-100 text-purple-800',
+      READY: 'bg-green-100 text-green-800',
+      ON_DELIVERY: 'bg-orange-100 text-orange-800',
+      DELIVERED: 'bg-green-100 text-green-800',
+      COMPLETED: 'bg-green-100 text-green-800',
+      CANCELLED: 'bg-red-100 text-red-800'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  const formatCurrency = (amount: any) => {
+    return new Intl.NumberFormat('en-NG', {
+      style: 'currency',
+      currency: 'NGN'
+    }).format(amount);
+  };
 
   // Generate page numbers to display
   const generatePageNumbers = () => {
@@ -117,20 +225,102 @@ const OrdersPage = () => {
   }
 
   return (
-    <div>
+    <Fragment>
       <Header />
-      <main className="p-6 px-24 space-y-4">
-        <h1 className="text-xl font-bold font-serif text-red-700 italic">Orders</h1>
+      <main className="p-6 px-24 space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold font-serif text-red-700 italic">Orders</h1>
+        </div>
 
-        {orders.map((order) => (
-          <div key={order.id} className="p-4 bg-gray-50 shadow rounded-xl mb-4">
-            <p>Order ID: {order.id}</p>
-            <p>Status: {order.status}</p>
-            <p>Total: {order.total}</p>
-            <p>Created At: {new Date(order.createdAt).toLocaleDateString()}</p>
-          </div>
-        ))}
+        <div className="space-y-4">
+          {orders.map((order) => (
+            <Collapsible key={order.id}>
+              <Card>
+                <CardContent className="p-6">
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex justify-between items-start w-full">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <p className="font-medium text-sm">{order.id}</p>
+                          <Badge className={`${getStatusColor(order.status)} font-medium`}>
+                            {order.status}
+                          </Badge>
+                          <Badge variant="outline" className='font-medium'>
+                            {order.type}
+                          </Badge>
+                        </div>
+                        <p className="text-gray-500 flex items-center gap-2 text-xs">
+                          <Clock className="h-3 w-3" />
+                          {order.date}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm">{formatCurrency(order.total)}</p>
+                        <ChevronDown className="h-4 w-4" />
+                      </div>
+                    </div>
+                  </CollapsibleTrigger>
 
+                  <CollapsibleContent className="mt-4 pt-4 border-t">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="font-semibold text-xs">Order Items</p>
+                        <div className="space-y-2">
+                          {order.items.map((item: any, index: number) => (
+                            <div key={index} className="flex justify-between text-sm">
+                              <span>{item.quantity}x {item.name}</span>
+                              <span>{formatCurrency(item.price * item.quantity)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {order.type === 'DELIVERY' && order.address && (
+                        <div className="space-y-2">
+                          <p className="font-semibold text-xs">Delivery Address</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <MapPin className="h-4 w-4 mt-1" />
+                            <p>{order.address.street}, {order.address.city}, {order.address.state}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between text-sm">
+                          <span>Subtotal</span>
+                          <span>{formatCurrency(order.subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span>Tax</span>
+                          <span>{formatCurrency(order.tax)}</span>
+                        </div>
+                        <div className="flex justify-between font-medium pt-2 border-t">
+                          <span>Total</span>
+                          <span>{formatCurrency(order.total)}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="capitalize font-medium">
+                            {order.payment.provider}
+                          </Badge>
+                          <Badge className={`${getStatusColor(order.payment.status)} font-medium`}>
+                            {order.payment.status}
+                          </Badge>
+                        </div>
+                        <Button variant="outline" size="sm" className='text-xs'>
+                          <Receipt className="h-3 w-3 mr-2" />
+                          View Receipt
+                        </Button>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </CardContent>
+              </Card>
+            </Collapsible>
+          ))}
+        </div>
         {totalPages > 1 && (
           <Pagination>
             <PaginationContent>
@@ -165,8 +355,9 @@ const OrdersPage = () => {
           </Pagination>
         )}
       </main>
-    </div>
+    </Fragment>
+    
   );
 };
 
-export default OrdersPage;
+export default CustomerGuard(MyOrdersPage);

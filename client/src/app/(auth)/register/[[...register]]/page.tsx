@@ -54,7 +54,7 @@ export default function Register() {
         })
   
         // Redirect to dashboard
-        router.back();    
+        router.push('/');      
     } catch (error: any) {
         toast({
           variant: 'destructive',

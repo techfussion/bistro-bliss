@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { Button } from "./ui/button";
-import { ShoppingCart, LogOut, UserRound } from "lucide-react";
+import { LogOut, UserRound, ShoppingBasket } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -28,7 +28,7 @@ const Profile = () => {
         <CartDrawer>
           <SheetTrigger>
             <Button variant="ghost" className="relative text-xs">
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingBasket className="h-5 w-5" />
               {cart.items.length > 0 && (
                 <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-700 text-xs text-white flex items-center justify-center">
                   {cart.items.reduce((total, item) => total + item.quantity, 0)}
@@ -39,7 +39,7 @@ const Profile = () => {
         </CartDrawer>
         <Popover>
           <PopoverTrigger>
-            <UserRound className="text-xs h-5 w-5" />
+            <UserRound className="text-xs h-4 w-4" />
           </PopoverTrigger>
           <PopoverContent className="w-max">
             <div className="flex flex-col items-center gap-1">
@@ -70,11 +70,18 @@ const Profile = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="ghost" size="sm" className="text-xs" asChild>
-        <Link href="/cart">
-          <ShoppingCart className="h-5 w-5" />
-        </Link>
-      </Button>
+      <CartDrawer>
+        <SheetTrigger>
+          <Button variant="ghost" className="relative text-xs">
+            <ShoppingBasket className="h-5 w-5" />
+            {cart.items.length > 0 && (
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-700 text-xs text-white flex items-center justify-center">
+                {cart.items.reduce((total, item) => total + item.quantity, 0)}
+              </span>
+            )}
+          </Button>
+        </SheetTrigger>
+      </CartDrawer>
       <Button asChild variant="link" size="sm" className="text-xs">
         <Link href="/login">Login</Link>
       </Button>

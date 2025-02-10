@@ -12,14 +12,14 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
-			dark: {
-			'50': '#414536',
-			'100': '#495460',
-			'700': '#2C2F24',
-			},
-			red: {
-				'700': '#AD343E',
-			},
+  			dark: {
+  				'50': '#414536',
+  				'100': '#495460',
+  				'700': '#2C2F24'
+  			},
+  			red: {
+  				'700': '#AD343E'
+  			},
   			gray: {
   				'50': '#F9F9F71F',
   				'100': 'var(--gray-100)',
@@ -32,18 +32,18 @@ export default {
   				'800': 'var(--gray-800)',
   				'900': '#474747'
   			},
-			silk: {
-			'50': '#F9F9F7',
-			'100': 'var(--silk-100)',
-			'200': 'var(--silk-200)',
-			'300': 'var(--silk-300)',
-			'400': 'var(--silk-400)',
-			'500': 'var(--silk-500)',
-			'600': '#ADB29E',
-			'700': '#ADB29E',
-			'800': 'var(--silk-800)',
-			'900': 'var(--silk-900)'
-			},
+  			silk: {
+  				'50': '#F9F9F7',
+  				'100': 'var(--silk-100)',
+  				'200': 'var(--silk-200)',
+  				'300': 'var(--silk-300)',
+  				'400': 'var(--silk-400)',
+  				'500': 'var(--silk-500)',
+  				'600': '#ADB29E',
+  				'700': '#ADB29E',
+  				'800': 'var(--silk-800)',
+  				'900': 'var(--silk-900)'
+  			},
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -81,6 +81,16 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {

@@ -6,6 +6,7 @@ interface UserType {
   name: string;
   email: string;
   id: string;
+  role: "CUSTOMER" | "ADMIN";
 }
 
 interface AuthState {
@@ -21,7 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [auth, setAuth] = useState<AuthState>({ isLoggedIn: true, user: null });
+  const [auth, setAuth] = useState<AuthState>({ isLoggedIn: false, user: null });
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
