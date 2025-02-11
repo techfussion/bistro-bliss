@@ -50,7 +50,7 @@ interface Reservation {
 const ReservationsPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [statusFilter, setStatusFilter] = useState('all');
-    const [dateFilter, setDateFilter] = useState('today');
+    const [dateFilter, setDateFilter] = useState('all');
     const [allReservations, setAllReservations] = useState<Reservation[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -147,30 +147,44 @@ const ReservationsPage = () => {
 
     const filterByStatus = (reservations: Reservation[]): Reservation[] => {
         if (statusFilter === 'all') return reservations;
-        const filter = reservations.filter(r => r.status.toLowerCase() === statusFilter.toLowerCase());
-        console.log('Status Filter: ', filter)
-        return filter
+        return reservations.filter(r => r.status.toLowerCase() === statusFilter.toLowerCase());
     };
 
     const filterByDate = (reservations: Reservation[]): Reservation[] => {
-        const today = new Date('2025-02-05'); // Using the current date from the context
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
+        if (dateFilter === 'all') return reservations;
+        
+        // Helper to compare only the date part
+        const isSameDay = (date1: string, date2: Date): boolean => {
+            const d1 = new Date(date1);
+            return d1.getFullYear() === date2.getFullYear() &&
+                   d1.getMonth() === date2.getMonth() &&
+                   d1.getDate() === date2.getDate();
+        };
+    
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        
+        // For week range
+        const weekFromNow = new Date(today);
+        weekFromNow.setDate(weekFromNow.getDate() + 7);
+    
         switch (dateFilter) {
             case 'today':
-                return reservations.filter(r => r.date === '2025-02-05');
-            case 'tomorrow':
-                return reservations.filter(r => r.date === '2025-02-06');
+                return reservations.filter(r => isSameDay(r.date, today));
+            case 'yesterday':
+                return reservations.filter(r => isSameDay(r.date, yesterday));
             case 'week':
-                // For demo, just showing today and tomorrow
-                return reservations.filter(r => ['2025-02-05', '2025-02-06'].includes(r.date));
+                return reservations.filter(r => {
+                    const reservationDate = new Date(r.date);
+                    return reservationDate >= today && reservationDate <= weekFromNow;
+                });
             default:
                 return reservations;
         }
     };
 
-    const filteredReservations = allReservations// filterByDate(filterByStatus(allReservations));
+    const filteredReservations = filterByDate(filterByStatus(allReservations))// filterByDate(filterByStatus(allReservations));
 
     interface StatusColors {
         [key: string]: string;
@@ -252,8 +266,9 @@ const ReservationsPage = () => {
                                 <SelectValue placeholder="Select Date" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem className='text-xs' value="all">All</SelectItem>
                                 <SelectItem className='text-xs' value="today">Today</SelectItem>
-                                <SelectItem className='text-xs' value="tomorrow">Tomorrow</SelectItem>
+                                <SelectItem className='text-xs' value="yesterday">Yesterday</SelectItem>
                                 <SelectItem className='text-xs' value="week">This Week</SelectItem>
                             </SelectContent>
                         </Select>
