@@ -35,35 +35,37 @@ export default function Register() {
     resolver: zodResolver(formSchema),
     mode: "onChange",
   });
-
+  
   const onSubmit: SubmitHandler<SignupFormData> = async (data) => {
     try {
-        setLoading(true);
-        const response = await apiClient.post(`/auth/register`, data);
-
-        // Extract token and user data
-        const { token, user } = response.data;
+      setLoading(true);
+      const response = await apiClient.post(`/auth/register`, data);
   
-        // Set credentials in AuthContext and local storage
-        setAuth({ isLoggedIn: true, user: user });
-        localStorage.setItem("token", token);
-
-        toast({
-          variant: "default",
-          description: `Account Created.`,
-        })
+      // Extract token and user data
+      const { token, user } = response.data;
   
-        // Redirect to dashboard
-        router.push('/');      
+      // Set credentials in AuthContext and localStorage
+      setAuth({ isLoggedIn: true, user: user });
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user)); // Store user details
+  
+      toast({
+        variant: "default",
+        description: `Account Created.`,
+      });
+  
+      // Redirect to dashboard
+      router.push('/');
     } catch (error: any) {
-        toast({
-          variant: 'destructive',
-          description: `Signup failed: ${error.message}`
-        });
+      toast({
+        variant: "destructive",
+        description: `Signup failed: ${error.message}`,
+      });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-silk-50">

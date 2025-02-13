@@ -20,6 +20,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -71,6 +80,8 @@ const OrdersManagement = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [statusFilter, setStatusFilter] = useState('all');
   const [orders, setOrders] = useState<Orders>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
 
@@ -80,20 +91,18 @@ const OrdersManagement = () => {
     try {
       setLoading(true);
 
-      const response = await apiClient.put(`/orders/${orderId}/status`, { status: newStatus }, {
+      await apiClient.put(`/orders/${orderId}/status`, { status: newStatus }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      const { data } = response.data
-
-      setOrders(data)
-
       toast({
         variant: "default",
         description: `Order status updated`,
       })
+
+      fetchOrders(currentPage);
     } catch (err: any) {
       toast({
         variant: "destructive",
@@ -104,19 +113,20 @@ const OrdersManagement = () => {
     }
   }
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page = 1) => {
     try {
       setLoading(true);
 
-      const response = await apiClient.get(`/orders`, {
+      const response = await apiClient.get(`/orders?page=${page}&limit=10`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      const { data } = response.data
+      const { meta, data } = response.data
 
       setOrders(data)
+      setTotalPages(meta.totalPages)
     } catch (err) {
       console.log(err);
     } finally {
@@ -125,8 +135,49 @@ const OrdersManagement = () => {
   }
 
   useEffect(() => {
-    fetchOrders();
-  }, [])
+    fetchOrders(currentPage);
+  }, [currentPage])
+
+  const formatDate = (isoString: string) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString();
+  };
+
+  // Generate page numbers to display
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+    
+    // Always show first page
+    pages.push(1);
+    
+    // Calculate start and end for middle pages
+    let start = Math.max(2, currentPage - Math.floor(maxPagesToShow / 2));
+    let end = Math.min(totalPages, start + maxPagesToShow - 1);
+    
+    // Adjust start if we're near the end
+    if (end === totalPages) {
+      start = Math.max(2, totalPages - maxPagesToShow + 1);
+    }
+    
+    // Add middle pages
+    for (let i = start; i < end && i < totalPages; i++) {
+      pages.push(i);
+    }
+    
+    // Add last page if not already included
+    if (totalPages > 1 && !pages.includes(totalPages)) {
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  };
+    
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+    setCurrentPage(page);
+    }
+  };
 
   if (loading) {
     return (
@@ -162,7 +213,7 @@ const OrdersManagement = () => {
                 </Select>
             }
         />
-        <div className="py-6 space-y-6">
+        <main className="py-6 space-y-6">
             <Card>
                 <CardContent className="p-0">
                 <Table>
@@ -235,9 +286,41 @@ const OrdersManagement = () => {
                 }
                 </CardContent>
             </Card>
-        </div>
-    </MainLayout>
+            {totalPages > 1 && (
+              <Pagination>
+                <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious 
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                    />
+                </PaginationItem>
 
+                {generatePageNumbers().map((page, index) => (
+                    <PaginationItem key={page}>
+                    {index > 0 && page - generatePageNumbers()[index - 1] > 1 && (
+                        <PaginationEllipsis />
+                    )}
+                    <PaginationLink 
+                        isActive={page === currentPage}
+                        onClick={() => handlePageChange(page)}
+                    >
+                        {page}
+                    </PaginationLink>
+                    </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                    <PaginationNext 
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                    />
+                </PaginationItem>
+                </PaginationContent>
+            </Pagination>
+          )}
+        </main>
+    </MainLayout>
   );
 };
 

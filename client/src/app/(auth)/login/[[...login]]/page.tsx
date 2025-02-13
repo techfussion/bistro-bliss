@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -37,30 +37,31 @@ export default function Login() {
     try {
       setLoading(true);
       const response = await apiClient.post(`/auth/login`, data);
-
+  
       // Extract token and user data
       const { token, user } = response.data;
-
-      // Set credentials in AuthContext and local storage
+  
+      // Set credentials in AuthContext and localStorage
       setAuth({ isLoggedIn: true, user: user });
       localStorage.setItem("token", token);
-
+      localStorage.setItem("user", JSON.stringify(user)); // Store user details
+  
       toast({
         variant: "default",
         description: `Login successful. Welcome back, ${user.firstName}!`,
-      })
-
+      });
+  
       // Redirect to dashboard
-      router.push(user.role === 'ADMIN' ? '/admin' : '/');    
+      router.push(user.role === "ADMIN" ? "/admin" : "/");
     } catch (error: any) {
       toast({
         variant: "destructive",
         description: `Login failed. ${error.message}`,
-      })
+      });
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   return (
     <div className="min-h-screen bg-silk-50">
