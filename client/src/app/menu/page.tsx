@@ -2,30 +2,21 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Header from '@/components/header';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useCart } from '@/context/CartContext';
-import menuItemImg from '@/assets/images/menuItemImg1.png';
-import menuItemImg2 from '@/assets/images/menuItemImg2.png';
 import Image from 'next/image';
-import { ShoppingBasket, ShoppingCart } from 'lucide-react';
+import apiClient from '@/interceptor/axios.interceptor';
+import menuItemImg from '@/assets/images/menuItemImg1.png';
 
 type MenuItem = {
   id: string;
   name: string;
   description: string;
   price: number;
-  image?: any;
+  image?: string | null;
   categoryId: string;
   isAvailable: boolean;
 };
@@ -37,107 +28,39 @@ type MenuCategory = {
 };
 
 const MenuPage = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const { cart, setCart } = useCart();
+  const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    const fetchMenuData = async () => {
-      const mockCategories: MenuCategory[] = [
-        {
-          id: 'all',
-          name: 'All',
-          items: [] 
-        },
-        {
-          id: 'cat1',
-          name: 'Appetizers',
-          items: [
-            { 
-              id: 'item1', 
-              name: 'Crispy Calamari', 
-              description: 'Golden fried calamari with zesty marinara sauce', 
-              price: 12.99, 
-              categoryId: 'cat1',
-              isAvailable: true,
-              image: menuItemImg
-            },
-          ]
-        },
-        {
-          id: 'cat2',
-          name: 'Dinner',
-          items: [
-            { 
-              id: 'item2', 
-              name: 'Grilled Salmon', 
-              description: 'Fresh salmon with herb crust', 
-              price: 24.99, 
-              categoryId: 'cat2',
-              isAvailable: false,
-              image: menuItemImg2
-            },
-          ]
-        },
-        {
-          id: 'cat3',
-          name: 'Appetizers',
-          items: [
-            { 
-              id: 'item3', 
-              name: 'Crispy Calamari', 
-              description: 'Golden fried calamari with zesty marinara sauce', 
-              price: 12.99, 
-              categoryId: 'cat1',
-              isAvailable: true,
-              image: menuItemImg
-            },
-          ]
-        },
-        {
-          id: 'cat4',
-          name: 'Appetizers',
-          items: [
-            { 
-              id: 'item4', 
-              name: 'Crispy Calamari', 
-              description: 'Golden fried calamari with zesty marinara sauce', 
-              price: 12.99, 
-              categoryId: 'cat1',
-              isAvailable: true,
-              image: menuItemImg
-            },
-          ]
-        },
-        {
-          id: 'cat5',
-          name: 'Appetizers',
-          items: [
-            { 
-              id: 'item5', 
-              name: 'Crispy Calamari', 
-              description: 'Golden fried calamari with zesty marinara sauce', 
-              price: 12.99, 
-              categoryId: 'cat1',
-              isAvailable: true,
-              image: menuItemImg
-            },
-          ]
-        },
-      ];
-
-      const allItems = mockCategories.flatMap(category => 
-        category.items.filter(item => item.id !== 'all')
-      );
-      mockCategories[0].items = allItems;
-
-      setCategories(mockCategories);
-      setTotalPages(Math.ceil(allItems.length / 9));
-    };
-
-    fetchMenuData();
-  }, []);
+  const fetchMenuItems = async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get(`/menu/items?page=${page}&limit=10`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const { meta, data } = response.data;
+      
+      const categoryMap: { [key: string]: MenuCategory } = {};
+      data.forEach((item: any) => {
+        if (!categoryMap[item.category.id]) {
+          categoryMap[item.category.id] = { id: item.category.id, name: item.category.name, items: [] };
+        }
+        categoryMap[item.category.id].items.push(item);
+      });
+      
+      setCategories(Object.values(categoryMap));
+      setTotalPages(meta.totalPages);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddToCart = (item: MenuItem) => {
     const existingItemIndex = cart.items.findIndex(cartItem => cartItem.id === item.id);
@@ -195,49 +118,50 @@ const MenuPage = () => {
     }
   };
 
+  useEffect(() => {
+    fetchMenuItems(currentPage);
+  }, [currentPage]);
+
   return (
     <Fragment>
       <Header />
       <main className="p-6 px-24 bg-silk-50 min-h-screen">
         <div className="flex flex-col items-center mx-auto w-1/2 gap-4 z-10 mb-8">
-           <h1 className="text-6xl text-dark-700 font-serif tracking-wider">Our Menu</h1>
-           <p className="text-dark-100 text-sm text-center w-2/3">
-             We consider all the drivers of change gives you the components you need to change to create a truly happens.
+          <h1 className="text-6xl text-dark-700 font-serif tracking-wider">Our Menu</h1>
+          <p className="text-dark-100 text-sm text-center w-2/3">
+            We consider all the drivers of change gives you the components you need to change to create a truly happens.
           </p>
         </div>
 
-        <Tabs defaultValue="all">
+        <Tabs defaultValue="all" onValueChange={(val) => setSelectedCategory(val === 'all' ? null : val)}>
           <TabsList className="gap-2 mb-8 flex justify-center bg-silk-50">
+            <TabsTrigger value="all" className="w-max rounded-full px-6 border hover:bg-red-50">
+              All
+            </TabsTrigger>
             {categories.map(category => (
-              <TabsTrigger 
-                key={category.id} 
-                value={category.id} 
-                className={`w-max rounded-full px-6 border hover:bg-red-50`}
-              >
+              <TabsTrigger key={category.id} value={category.id} className="w-max rounded-full px-6 border hover:bg-red-50">
                 {category.name}
               </TabsTrigger>
             ))}
           </TabsList>
 
-          {categories.map(category => (
+          {(selectedCategory ? categories.filter(cat => cat.id === selectedCategory) : categories).map(category => (
             <TabsContent key={category.id} value={category.id}>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2 gap-y-6">
-                {category.items
-                  .slice((currentPage - 1) * 9, currentPage * 9)
-                  .map(item => (
+                {category.items.slice((currentPage - 1) * 9, currentPage * 9).map(item => (
                   <Card key={item.id} className="hover:shadow-lg transition-shadow max-w-[250px] rounded-lg transition duration-500 hover:translate-y-3 cursor-pointer hover:scale-105">
-                    {item.image && (
+                    {/* {item.image && ( */}
                       <div className="h-48 overflow-hidden">
                         <Image 
-                          src={item.image}
-                          alt={item.name} 
+                          src={menuItemImg}
+                          alt='default' 
                           width={300}
                           className="w-full h-full object-cover rounded-t-lg"
                         />
                       </div>
-                    )}
+                    {/* )} */}
                     <CardContent className='flex flex-col items-center gap-y-4'>
-                      <p className='text-red-700 font-semibold mt-6 font-serif'>₦ {item.price.toFixed(2)}</p>
+                      <p className='text-red-700 font-semibold mt-6 font-serif'>₦ {item.price}</p>
                       <p className='font-semibold'>{item.name}</p>
                       <p className="text-dark-50 text-sm text-center">{item.description}</p>
                       <Button 
@@ -255,10 +179,8 @@ const MenuPage = () => {
             </TabsContent>
           ))}
         </Tabs>
-      </main>
-
-      {totalPages > 1 && (
-        <Pagination>
+        {totalPages > 1 && (
+          <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious 
@@ -289,7 +211,8 @@ const MenuPage = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-      )}
+        )}
+      </main>
     </Fragment>
   );
 };

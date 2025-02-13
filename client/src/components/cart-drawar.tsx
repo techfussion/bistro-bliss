@@ -8,7 +8,7 @@ import {
   SheetFooter
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Trash2, Plus, Minus } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBasket } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
@@ -57,8 +57,8 @@ export const CartDrawer = ({ children }: CartDrawerProps) => {
         
         {cart.items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-500">
-            <ShoppingCart size={48} />
-            <p className="mt-4 text-xs">Your cart is empty</p>
+            <ShoppingBasket size={48} />
+            <p className="mt-4 text-xs">Your bascket is empty</p>
           </div>
         ) : (
           <>
@@ -71,7 +71,7 @@ export const CartDrawer = ({ children }: CartDrawerProps) => {
                   <div className="flex-1">
                     <h3 className="font-semibold text-deak-700 text-sm">{item.name}</h3>
                     <p className="text-xs">
-                      ₦{item.price.toFixed(2)} × {item.quantity}
+                      ₦{item.price} × {item.quantity}
                     </p>
                   </div>
                   
@@ -108,7 +108,7 @@ export const CartDrawer = ({ children }: CartDrawerProps) => {
               <div className="w-full">
                 <div className="flex justify-between mb-4">
                   <span className="font-semibold">Total</span>
-                  <span className="font-bold">₦{cart.total.toFixed(2)}</span>
+                  <span className="font-bold">₦{cart.total}</span>
                 </div>
                 <Button 
                   onClick={() => setCheckoutSheetOpen(!checkoutSheetOpen)}

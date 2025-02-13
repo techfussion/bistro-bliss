@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Layout, Store, ShoppingBag, Calendar } from 'lucide-react';
 import logo from '@/assets/icons/logo.png';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 const LINKS = [
   { path: '/admin', label: 'Overview', icon: Layout },
@@ -18,6 +20,7 @@ const LINKS = [
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -45,6 +48,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
             ))}
           </ul>
         </nav>
+        <Button variant='link' size='sm' className='px-6 text-sm text-red-700 font-serif italic' onClick={logout}>
+          Logout
+        </Button>
       </aside>
 
       {/* Main Content */}
