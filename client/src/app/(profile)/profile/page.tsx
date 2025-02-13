@@ -1,62 +1,8 @@
-// 'use client';
-
-// import { useState } from "react";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import Header from "@/components/header";
-// import { CustomerGuard } from "@/components/hoc/customer-gaurd";
-
-// function ProfilePage() {
-//   const [firstName, setFirstName] = useState("John");
-//   const [lastName, setLastName] = useState("Doe");
-//   const [email, setEmail] = useState("john.doe@example.com");
-//   const [phone, setPhone] = useState("1234567890");
-
-//   const handleUpdate = () => {
-//     // Handle user profile update logic here
-//     alert("Profile updated successfully");
-//   };
-
-//   return (
-//     <div>
-//         <Header />
-//         <div className="p-6 space-y-4 px-24">
-        // <h1 className="text-xl font-bold font-serif text-red-700 italic">Profile</h1>
-//         <Card className="p-4">
-//                 <CardContent className="space-y-4">
-//                 <div>
-//                     <label className="block mb-1">First Name</label>
-//                     <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-//                 </div>
-//                 <div>
-//                     <label className="block mb-1">Last Name</label>
-//                     <Input value={lastName} onChange={(e) => setLastName(e.target.value)} />
-//                 </div>
-//                 <div>
-//                     <label className="block mb-1">Email</label>
-//                     <Input value={email} onChange={(e) => setEmail(e.target.value)} />
-//                 </div>
-//                 <div>
-//                     <label className="block mb-1">Phone</label>
-//                     <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-//                 </div>
-//                 <Button onClick={handleUpdate}>Update Profile</Button>
-//                 </CardContent>
-//             </Card>
-//         </div>
-//     </div>
-//   );
-// }
-
-// export default CustomerGuard(ProfilePage);
-
 'use client';
 
 import React, { Fragment, useState } from 'react';
 import { 
-  User, MapPin, Plus, Pencil, Trash2, 
-  Phone, Mail, Check, X 
+  Plus, Pencil, Trash2, Mail, Check, X 
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -72,38 +18,18 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Header from '@/components/header';
 import { CustomerGuard } from '@/components/hoc/customer-gaurd';
-
+import { useAuth } from '@/context/AuthContext';
 
 const ProfilePage = () => {
   const [editingProfile, setEditingProfile] = useState(false);
   const [showAddAddress, setShowAddAddress] = useState(false);
+  const { auth } = useAuth();
+  const { user } = auth;
   
-  // Sample user data
-  const [user, setUser] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+234 123 456 7890',
-    addresses: [
-      {
-        id: '1',
-        street: '123 Main Street',
-        city: 'Lagos',
-        state: 'Lagos State',
-        postalCode: '100001',
-        isDefault: true
-      },
-      {
-        id: '2',
-        street: '456 Side Road',
-        city: 'Lagos',
-        state: 'Lagos State',
-        postalCode: '100002',
-        isDefault: false
-      }
-    ]
-  });
-
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+  
   return (
     <Fragment>
       <Header />
@@ -146,10 +72,6 @@ const ProfilePage = () => {
                     <Label htmlFor="email" className='text-xs font-semibold'>Email</Label>
                     <Input id="email" type="email" defaultValue={user.email} />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className='text-xs font-semibold'>Phone</Label>
-                    <Input id="phone" defaultValue={user.phone} />
-                  </div>
                   <div className="md:col-span-2">
                     <Button size='sm' className="mr-2 bg-red-700 hover:bg-red-700/90">
                       <Check className="h-4 w-4 mr-2" /> Save Changes
@@ -173,20 +95,13 @@ const ProfilePage = () => {
                       {user.email}
                     </p>
                   </div>
-                  <div className="space-y-1">
-                    <Label className='text-xs font-semibold'>Phone</Label>
-                    <p className="text-xs flex items-center gap-2">
-                      <Phone className="h-3 w-3" />
-                      {user.phone}
-                    </p>
-                  </div>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        <Card className='shadow-none border-none p-0'>
+        {/* <Card className='shadow-none border-none p-0'>
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle className="text-lg font-serif italic font-bold flex items-center gap-2">
               Addresses
@@ -279,7 +194,7 @@ const ProfilePage = () => {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </Fragment>
     

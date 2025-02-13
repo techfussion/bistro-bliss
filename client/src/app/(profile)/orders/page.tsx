@@ -4,8 +4,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Header from "@/components/header";
 import apiClient from "@/interceptor/axios.interceptor";
 import { 
-  Package, Clock, MapPin, Receipt, ChevronDown, 
-  ChevronUp, ExternalLink 
+  Clock, MapPin, Receipt, ChevronDown
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,47 +26,47 @@ import {
 import Link from "next/link";
 import { CustomerGuard } from "@/components/hoc/customer-gaurd";
 
-const ordersNative = [
-  {
-    id: 'ORD-001',
-    date: '2025-02-05',
-    status: 'DELIVERED',
-    type: 'DELIVERY',
-    items: [
-      { name: 'Jollof Rice', quantity: 2, price: 2500 },
-      { name: 'Chicken Wings', quantity: 1, price: 3000 },
-    ],
-    subtotal: 8000,
-    tax: 600,
-    total: 8600,
-    address: {
-      street: '123 Main Street',
-      city: 'Lagos',
-      state: 'Lagos State',
-    },
-    payment: {
-      status: 'COMPLETED',
-      provider: 'PAYSTACK'
-    }
-  },
-  {
-    id: 'ORD-002',
-    date: '2025-02-06',
-    status: 'PREPARING',
-    type: 'PICKUP',
-    items: [
-      { name: 'Suya Platter', quantity: 1, price: 5000 },
-      { name: 'Chapman', quantity: 2, price: 1000 },
-    ],
-    subtotal: 7000,
-    tax: 525,
-    total: 7525,
-    payment: {
-      status: 'COMPLETED',
-      provider: 'PAYSTACK'
-    }
-  }
-];
+// const ordersNative = [
+//   {
+//     id: 'ORD-001',
+//     date: '2025-02-05',
+//     status: 'DELIVERED',
+//     type: 'DELIVERY',
+//     items: [
+//       { name: 'Jollof Rice', quantity: 2, price: 2500 },
+//       { name: 'Chicken Wings', quantity: 1, price: 3000 },
+//     ],
+//     subtotal: 8000,
+//     tax: 600,
+//     total: 8600,
+//     address: {
+//       street: '123 Main Street',
+//       city: 'Lagos',
+//       state: 'Lagos State',
+//     },
+//     payment: {
+//       status: 'COMPLETED',
+//       provider: 'PAYSTACK'
+//     }
+//   },
+//   {
+//     id: 'ORD-002',
+//     date: '2025-02-06',
+//     status: 'PREPARING',
+//     type: 'PICKUP',
+//     items: [
+//       { name: 'Suya Platter', quantity: 1, price: 5000 },
+//       { name: 'Chapman', quantity: 2, price: 1000 },
+//     ],
+//     subtotal: 7000,
+//     tax: 525,
+//     total: 7525,
+//     payment: {
+//       status: 'COMPLETED',
+//       provider: 'PAYSTACK'
+//     }
+//   }
+// ];
 
 const MyOrdersPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -102,9 +101,9 @@ const MyOrdersPage = () => {
   }, []);
 
   useEffect(() => {
-    setOrders(ordersNative)
-    setTotalPages(1)
-    // fetchOrders(currentPage);
+    // setOrders(ordersNative)
+    // setTotalPages(1)
+    fetchOrders(currentPage);
   }, [token, currentPage]);
 
   interface Address {

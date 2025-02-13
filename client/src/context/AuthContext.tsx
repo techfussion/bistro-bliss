@@ -44,8 +44,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface UserType {
-  name: string;
   email: string;
+  firstName: string;
+  lastName: string;
   id: string;
   role: "CUSTOMER" | "ADMIN";
 }

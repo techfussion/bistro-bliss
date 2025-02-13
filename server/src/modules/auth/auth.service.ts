@@ -43,6 +43,7 @@ export class AuthService {
         firstName: true,
         lastName: true,
         role: true,
+        addresses: true,
       },
     });
 
@@ -59,6 +60,9 @@ export class AuthService {
     // Find user
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
+      include: {
+        addresses: true
+      }
     });
 
     if (!user) {
