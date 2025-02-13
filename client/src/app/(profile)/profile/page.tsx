@@ -101,7 +101,7 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
 
-        {/* <Card className='shadow-none border-none p-0'>
+        <Card className='shadow-none border-none p-0'>
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle className="text-lg font-serif italic font-bold flex items-center gap-2">
               Addresses
@@ -158,7 +158,7 @@ const ProfilePage = () => {
               </DialogContent>
             </Dialog>
           </CardHeader>
-          <CardContent>
+          {/* <CardContent>
             <div className="space-y-4">
               {user.addresses.map((address) => (
                 <div
@@ -193,8 +193,8 @@ const ProfilePage = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card> */}
+          </CardContent> */}
+        </Card>
       </div>
     </Fragment>
     
