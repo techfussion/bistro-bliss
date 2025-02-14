@@ -235,7 +235,7 @@ const OrdersManagement = () => {
                         <TableRow className='text-xs' key={order.id}>
                             <TableCell className="font-medium">{order.id}</TableCell>
                             <TableCell>{order.customer}</TableCell>
-                            <TableCell>${order.total.toFixed(2)}</TableCell>
+                            <TableCell>${order.total}</TableCell>
                             <TableCell>
                             <span className={`px-2 py-1 rounded-full text-xs ${
                                 {
@@ -346,11 +346,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, onUpdateStatus, load
           <ul className="list-disc pl-5">
             {order.items.map((item, index) => (
               <li key={index} className='text-xs mb-1'>
-                {item.name} - {item.quantity} x ${item.price.toFixed(2)}
+                {item.name} - {item.quantity} x ${item.price}
               </li>
             ))}
           </ul>
-          <p className="mt-2 font-semibold text-sm">Total: ${order.total.toFixed(2)}</p>
+          <p className="mt-2 font-semibold text-sm">Total: ${order.total}</p>
         </div>
       </div>
 

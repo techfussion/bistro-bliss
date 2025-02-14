@@ -293,32 +293,28 @@ export const CheckoutSheet = ({ isOpen, onClose }: CheckoutSheetProps) => {
     }
   };
 
-  const handlePaymentSuccess = async (paymentData: any) => {
+  const handlePaymentSuccess = async (paymentData: any, orderId: string) => {
+    console.log("HANDLING SUCCESSFUL PAYMENT", orderId);
     try {
-      if (!currentOrderId) {
+      if (!orderId) {
         throw new Error('No order ID found');
       }
-
+  
       // Update payment status
-      await apiClient.post(`/payments/${currentOrderId}/verify`, {
-        reference: paymentData.reference,
-        transaction: paymentData.transaction,
-        status: paymentData.status,
+      await apiClient.post(`/payments`, {
+        orderId: orderId
       }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
-      // toast.success("Order placed successfully!");
+  
       setCart({ items: [], total: 0});
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error processing payment:', error);
-      // toast.error("Payment verification failed. Please contact support.");
     } finally {
       setIsProcessing(false);
-      setCurrentOrderId(null);
     }
   };
 
@@ -333,7 +329,7 @@ export const CheckoutSheet = ({ isOpen, onClose }: CheckoutSheetProps) => {
       
       // Create order first
       const order = await createOrder();
-      setCurrentOrderId(order.id);
+      const orderId = order.id;
 
       // Initialize Paystack payment
       const config = {
@@ -351,10 +347,9 @@ export const CheckoutSheet = ({ isOpen, onClose }: CheckoutSheetProps) => {
             },
           ],
         },
-        onSuccess: handlePaymentSuccess,
+        onSuccess: (paymentData: any) => handlePaymentSuccess(paymentData, orderId),
         onCancel: () => {
           setIsProcessing(false);
-          setCurrentOrderId(null);
           // toast.error("Payment cancelled");
         }
       };

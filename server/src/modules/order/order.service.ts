@@ -151,6 +151,7 @@ export class OrderService {
               lastName: true,
             },
           },
+          payment: true,
         },
         orderBy: {
           createdAt: 'desc',
