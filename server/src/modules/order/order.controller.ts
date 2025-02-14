@@ -28,7 +28,7 @@ export class OrderController {
   @Post()
   @ApiOperation({ summary: 'Create a new order' })
   async createOrder(@Body() dto: CreateOrderDto, @Req() req: any) {
-    return this.orderService.createOrder(dto, req.user.userId);
+    return this.orderService.createOrder(dto, req.user.sub);
   }
 
   @Get()

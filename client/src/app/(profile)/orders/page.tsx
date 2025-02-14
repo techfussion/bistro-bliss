@@ -68,9 +68,43 @@ import { CustomerGuard } from "@/components/hoc/customer-gaurd";
 //   }
 // ];
 
+interface Address {
+  street: string;
+  city: string;
+  state: string;
+}
+interface MenuItem {
+  name: string;
+}
+
+interface Item {
+  memuItem: MenuItem[];
+  quantity: number;
+  price: number;
+}
+
+interface Payment {
+  status: string;
+  provider: string;
+}
+
+interface Order {
+  id: string;
+  date: string;
+  status: string;
+  type: string;
+  items: Item[];
+  subtotal: number;
+  tax: number;
+  total: number;
+  address?: Address;
+  payment: Payment;
+}
+
+
 const MyOrdersPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -105,36 +139,6 @@ const MyOrdersPage = () => {
     // setTotalPages(1)
     fetchOrders(currentPage);
   }, [token, currentPage]);
-
-  interface Address {
-    street: string;
-    city: string;
-    state: string;
-  }
-
-  interface Item {
-    name: string;
-    quantity: number;
-    price: number;
-  }
-
-  interface Payment {
-    status: string;
-    provider: string;
-  }
-
-  interface Order {
-    id: string;
-    date: string;
-    status: string;
-    type: string;
-    items: Item[];
-    subtotal: number;
-    tax: number;
-    total: number;
-    address?: Address;
-    payment: Payment;
-  }
 
   const getStatusColor = (status: string): string => {
     const colors: { [key: string]: string } = {
@@ -267,7 +271,7 @@ const MyOrdersPage = () => {
                         <div className="space-y-2">
                           {order.items.map((item: any, index: number) => (
                             <div key={index} className="flex justify-between text-sm">
-                              <span>{item.quantity}x {item.name}</span>
+                              <span>{item.quantity}x {item.menuItem.name}</span>
                               <span>{formatCurrency(item.price * item.quantity)}</span>
                             </div>
                           ))}
@@ -301,12 +305,28 @@ const MyOrdersPage = () => {
 
                       <div className="flex justify-between items-center pt-2">
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="capitalize font-medium">
-                            {order.payment.provider}
-                          </Badge>
-                          <Badge className={`${getStatusColor(order.payment.status)} font-medium`}>
-                            {order.payment.status}
-                          </Badge>
+                          {
+                            order.payment ? (
+                              <Fragment>
+                                <Badge variant="outline" className="capitalize font-medium">
+                                  {order.payment.provider}
+                                </Badge>
+                                <Badge className={`${getStatusColor(order.payment.status)} font-medium`}>
+                                  {order?.payment?.status}
+                                </Badge>
+                              </Fragment>
+                            ) :
+                              (
+                                <Fragment>
+                                  <Badge variant="outline" className="capitalize font-medium">
+                                    PENDING
+                                  </Badge>
+                                  <Badge className={`${getStatusColor("PENDING")} font-medium`}>
+                                    PENDING
+                                  </Badge>
+                                </Fragment>
+                              )
+                          }
                         </div>
                         <Button variant="outline" size="sm" className='text-xs'>
                           <Receipt className="h-3 w-3 mr-2" />

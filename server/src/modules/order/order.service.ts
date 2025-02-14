@@ -30,6 +30,8 @@ export class OrderService {
       },
     });
 
+    console.log('menuItems: ', menuItems)
+
     // Create order items and calculate subtotal
     for (const item of dto.items) {
       const menuItem = menuItems.find((mi) => mi.id === item.menuItemId);
@@ -79,6 +81,40 @@ export class OrderService {
           },
         },
       },
+      // data: {
+      //   user: {
+      //     connect: {
+      //       id: userId  // Connect the order to the existing user
+      //     }
+      //   },
+      //   type: dto.type,
+      //   address: {
+      //     connect: {
+      //       id: dto.addressId,
+      //     },
+      //   },
+      //   specialNotes: dto.specialNotes,
+      //   subtotal,
+      //   tax,
+      //   total,
+      //   items: {
+      //     create: orderItems,
+      //   },
+      // },
+      // include: {
+      //   items: {
+      //     include: {
+      //       menuItem: true,
+      //     },
+      //   },
+      //   user: {
+      //     select: {
+      //       email: true,
+      //       firstName: true,
+      //       lastName: true,
+      //     },
+      //   },
+      // },
     });
 
     // Emit new order notification
@@ -95,7 +131,7 @@ export class OrderService {
     const { page = 1, limit = 10 } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const where = user.role === Role.ADMIN ? {} : { userId: user.userId };
+    const where = user.role === Role.ADMIN ? {} : { userId: user.sub };
 
     const [orders, total] = await Promise.all([
       this.prisma.order.findMany({
