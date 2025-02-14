@@ -195,11 +195,12 @@ export const CheckoutSheet = ({ isOpen, onClose }: CheckoutSheetProps) => {
     email: user?.email || "",
     amount: totalWithDelivery * 100,
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-    onSuccess: () => {
+    onSuccess: (data: any) => {
       // Handle successful payment
       setIsProcessing(false);
       onClose();
       // Call API here to save the order
+      console.log(data)
     },
     onCancel: () => {
       setIsProcessing(false);
