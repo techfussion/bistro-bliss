@@ -145,7 +145,11 @@ const MenuPage = () => {
             ))}
           </TabsList>
 
-          {(selectedCategory ? categories.filter(cat => cat.id === selectedCategory) : categories).map(category => (
+          {/* {(selectedCategory ? categories.filter(cat => cat.id === selectedCategory) : categories).map(category => ( */}
+          {(selectedCategory
+            ? categories.filter(cat => cat.id === selectedCategory)
+            : [{ id: "all", name: "All", items: categories.flatMap(cat => cat.items) }]
+          ).map(category => (
             <TabsContent key={category.id} value={category.id}>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2 gap-y-6">
                 {category.items.slice((currentPage - 1) * 9, currentPage * 9).map(item => (

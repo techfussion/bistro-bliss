@@ -2,7 +2,7 @@
 
 import React, { Fragment, useState } from 'react';
 import { 
-  Plus, Pencil, Trash2, Mail, Check, X 
+  Plus, Pencil, Mail, Check, X
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
